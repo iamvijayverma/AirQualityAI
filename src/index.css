@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-secondary-200 dark:border-secondary-700;
+  }
+
+  body {
+    @apply bg-secondary-50 dark:bg-secondary-950 text-secondary-900 dark:text-secondary-100 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 dark:bg-secondary-900/70 backdrop-blur-xl border border-white/20 dark:border-secondary-700/50 shadow-glass dark:shadow-glass-dark;
+  }
+
+  .glass-card {
+    @apply glass rounded-2xl p-6;
+  }
+
+  .glass-sidebar {
+    @apply bg-white/90 dark:bg-secondary-900/90 backdrop-blur-2xl border-r border-secondary-200/50 dark:border-secondary-700/50;
+  }
+
+  .glass-input {
+    @apply bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all duration-200;
+  }
+
+  .glass-button {
+    @apply bg-primary-500/10 dark:bg-primary-500/20 hover:bg-primary-500/20 dark:hover:bg-primary-500/30 text-primary-600 dark:text-primary-400 font-medium px-4 py-2 rounded-xl backdrop-blur-sm border border-primary-500/20 transition-all duration-200;
+  }
+
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600;
+  }
+
+  .gradient-accent {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent;
+  }
+
+  .aqi-good {
+    @apply bg-aqi-good/20 text-aqi-good border-aqi-good/30;
+  }
+
+  .aqi-moderate {
+    @apply bg-aqi-moderate/20 text-aqi-moderate border-aqi-moderate/30;
+  }
+
+  .aqi-unhealthy {
+    @apply bg-aqi-unhealthy/20 text-aqi-unhealthy border-aqi-unhealthy/30;
+  }
+
+  .aqi-very-unhealthy {
+    @apply bg-aqi-veryUnhealthy/20 text-aqi-veryUnhealthy border-aqi-veryUnhealthy/30;
+  }
+
+  .aqi-hazardous {
+    @apply bg-aqi-hazardous/20 text-aqi-hazardous border-aqi-hazardous/30;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-secondary-600 dark:text-secondary-400 hover:bg-secondary-100 dark:hover:bg-secondary-800 hover:text-secondary-900 dark:hover:text-secondary-100 transition-all duration-200;
+  }
+
+  .nav-item-active {
+    @apply bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 font-medium;
+  }
+
+  .stat-card {
+    @apply glass-card flex flex-col gap-2;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-secondary-900 dark:text-white;
+  }
+
+  .stat-label {
+    @apply text-sm text-secondary-500 dark:text-secondary-400;
+  }
+
+  .chart-container {
+    @apply glass-card;
+  }
+
+  .alert-critical {
+    @apply border-l-4 border-l-red-500 bg-red-500/10;
+  }
+
+  .alert-warning {
+    @apply border-l-4 border-l-amber-500 bg-amber-500/10;
+  }
+
+  .alert-info {
+    @apply border-l-4 border-l-blue-500 bg-blue-500/10;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.5);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.7);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Leaflet Map Customization */
+.leaflet-container {
+  @apply rounded-2xl;
+}
+
+.leaflet-tile-pane {
+  filter: saturate(0.9) brightness(0.95);
+}
+
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) saturate(0.7) brightness(0.9);
+}
+
+.dark .leaflet-control-zoom {
+  @apply bg-secondary-800/90 border-secondary-700;
+}
+
+.dark .leaflet-control-zoom a {
+  @apply bg-secondary-800/90 text-secondary-300 border-secondary-700;
+}
+
+.dark .leaflet-control-zoom a:hover {
+  @apply bg-secondary-700 text-secondary-100;
+}
+
+/* Custom marker styles */
+.aqi-marker {
+  @apply flex items-center justify-center rounded-full font-bold text-white shadow-lg;
+}
+
+.aqi-marker-good {
+  @apply bg-aqi-good;
+}
+
+.aqi-marker-moderate {
+  @apply bg-aqi-moderate;
+}
+
+.aqi-marker-unhealthy {
+  @apply bg-aqi-unhealthy;
+}
+
+.aqi-marker-very-unhealthy {
+  @apply bg-aqi-veryUnhealthy;
+}
+
+.aqi-marker-hazardous {
+  @apply bg-aqi-hazardous;
+}

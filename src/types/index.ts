@@ -16,26 +16,34 @@ export interface ForecastRequest {
   aqi_24: number;
 }
 
-export interface ForecastResponse {
-  predicted_aqi: number;
-  confidence: number;
-  trend: 'increasing' | 'decreasing' | 'stable';
-  forecast_24h: { hour: number; aqi: number }[];
-  sources: PollutionSource[];
-}
-
 export interface PollutionSource {
   name: string;
   percentage: number;
   color: string;
 }
 
+export interface ForecastResponse {
+  predicted_aqi: number;
+  confidence?: number;
+  trend?: 'increasing' | 'decreasing' | 'stable';
+  forecast_24h?: { hour: number; aqi: number }[];
+  sources?: PollutionSource[];
+}
+
 export interface SourceAttributionResponse {
-  traffic: number;
-  industry: number;
-  construction: number;
-  mixed_source: number;
-  timestamp: string;
+  traffic?: number;
+  industry?: number;
+  construction?: number;
+  mixed_source?: number;
+  primary_source?: string;
+  probabilities?: {
+    Traffic: number;
+    Industry: number;
+    Construction: number;
+    Mixed?: number;
+  };
+  method?: string;
+  timestamp?: string;
 }
 
 export interface CitizenAdvisoryRequest {
@@ -46,19 +54,13 @@ export interface CitizenAdvisoryRequest {
 }
 
 export interface CitizenAdvisoryResponse {
-  risk_level: 'low' | 'moderate' | 'high' | 'very_high';
-  health_advisory: string;
-  precautions: string[];
-  mask_recommendation: string;
-  outdoor_activity: string;
-}
-
-export interface EnforcementResponse {
-  priority_actions: string[];
-  aqi_reduction: number;
   risk_level: string;
-  enforcement_score: number;
-  zones: EnforcementZone[];
+  health_advisory?: string;
+  primary_advisory?: string;
+  precautions: string[];
+  mask_recommendation?: string;
+  mask_recommended?: boolean;
+  outdoor_activity?: string;
 }
 
 export interface EnforcementZone {
@@ -66,6 +68,15 @@ export interface EnforcementZone {
   aqi: number;
   action: string;
   priority: 'high' | 'medium' | 'low';
+}
+
+export interface EnforcementResponse {
+  priority_actions: string[];
+  aqi_reduction?: number;
+  expected_aqi_reduction?: string;
+  risk_level: string;
+  enforcement_score: number;
+  zones?: EnforcementZone[];
 }
 
 export interface WeatherData {
@@ -89,7 +100,10 @@ export interface Alert {
 export interface MonitoringStation {
   id: string;
   name: string;
-  location: { lat: number; lng: number };
+  location: {
+    lat: number;
+    lng: number;
+  };
   aqi: number;
   status: 'active' | 'inactive' | 'maintenance';
 }

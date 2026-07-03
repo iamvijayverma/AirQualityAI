@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { motion } from 'framer-motion';
 import { Card, CardHeader } from '../ui/Card';
 
 interface AQITrendChartProps {

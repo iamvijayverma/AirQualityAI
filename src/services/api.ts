@@ -31,7 +31,18 @@ export const forecastApi = {
 
 export const sourceAttributionApi = {
   getAttribution: async (): Promise<SourceAttributionResponse> => {
-    const response = await api.post<SourceAttributionResponse>('/source-attribution');
+    const response = await api.post<SourceAttributionResponse>(
+      '/source-attribution',
+      {
+        pm25: 50,
+        pm10: 80,
+        no2: 30,
+        traffic_density: 60,
+        construction_index: 20,
+        industrial_index: 40,
+      }
+    );
+
     return response.data;
   },
 };
@@ -45,7 +56,16 @@ export const citizenAdvisoryApi = {
 
 export const enforcementApi = {
   getEnforcement: async (): Promise<EnforcementResponse> => {
-    const response = await api.post<EnforcementResponse>('/enforcement');
+    const response = await api.post<EnforcementResponse>(
+      '/enforcement',
+      {
+        aqi: 180,
+        traffic_pct: 45,
+        construction_pct: 30,
+        industry_pct: 25,
+      }
+    );
+
     return response.data;
   },
 };

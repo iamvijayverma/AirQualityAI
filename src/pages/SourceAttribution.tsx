@@ -1,33 +1,68 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Factory, Car, HardHat, GitBranch, RefreshCw } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import {
+  Factory,
+  Car,
+  HardHat,
+  GitBranch,
+  RefreshCw,
+} from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
+
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader } from '../components/ui/Card';
 import { LoadingOverlay } from '../components/ui/Loading';
 import { sourceAttributionApi } from '../services/api';
-import { mockSourceAttribution } from '../data/mockData';
 
 const COLORS = {
   traffic: '#3b82f6',
   industry: '#f59e0b',
   construction: '#ef4444',
-  mixed_source: '#8b5cf6',
+  mixed: '#8b5cf6',
+};
+
+const defaultData = {
+  primary_source: 'Traffic',
+  probabilities: {
+    Traffic: 0.35,
+    Industry: 0.28,
+    Construction: 0.22,
+    Mixed: 0.15,
+  },
 };
 
 const SourceAttribution = () => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(mockSourceAttribution);
   const [error, setError] = useState('');
+  const [data, setData] = useState<any>(defaultData);
 
   const fetchData = async () => {
     setLoading(true);
     setError('');
+
     try {
       const response = await sourceAttributionApi.getAttribution();
-      setData(response);
-    } catch {
-      setError('Failed to fetch data. Using simulated data.');
+
+      setData({
+        primary_source:
+          response?.primary_source ?? defaultData.primary_source,
+
+        probabilities:
+          response?.probabilities ?? defaultData.probabilities,
+      });
+    } catch (err) {
+      console.error(err);
+
+      setError('Backend unavailable. Showing demo data.');
+
+      setData(defaultData);
     } finally {
       setLoading(false);
     }
@@ -38,10 +73,38 @@ const SourceAttribution = () => {
   }, []);
 
   const chartData = [
-    { name: 'Traffic', value: data.traffic, color: COLORS.traffic, icon: Car },
-    { name: 'Industry', value: data.industry, color: COLORS.industry, icon: Factory },
-    { name: 'Construction', value: data.construction, color: COLORS.construction, icon: HardHat },
-    { name: 'Mixed Source', value: data.mixed_source, color: COLORS.mixed_source, icon: GitBranch },
+    {
+      name: 'Traffic',
+      value: Math.round(
+        (data?.probabilities?.Traffic ?? 0) * 100
+      ),
+      color: COLORS.traffic,
+      icon: Car,
+    },
+    {
+      name: 'Industry',
+      value: Math.round(
+        (data?.probabilities?.Industry ?? 0) * 100
+      ),
+      color: COLORS.industry,
+      icon: Factory,
+    },
+    {
+      name: 'Construction',
+      value: Math.round(
+        (data?.probabilities?.Construction ?? 0) * 100
+      ),
+      color: COLORS.construction,
+      icon: HardHat,
+    },
+    {
+      name: 'Mixed Source',
+      value: Math.round(
+        (data?.probabilities?.Mixed ?? 0) * 100
+      ),
+      color: COLORS.mixed,
+      icon: GitBranch,
+    },
   ];
 
   return (
@@ -107,7 +170,7 @@ const SourceAttribution = () => {
                       borderRadius: '12px',
                       boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                     }}
-                    formatter={(value: number) => [`${value}%`, 'Contribution']}
+                  formatter={(value: any) => [`${Number(value)}%`, 'Contribution']}
                   />
                 </Pie>
                 <Legend

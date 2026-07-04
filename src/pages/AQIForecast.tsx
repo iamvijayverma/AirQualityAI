@@ -6,126 +6,16 @@ import {
   ResponsiveContainer, PieChart as RechartsPie, Pie, Cell 
 } from 'recharts';
 
-// ==========================================
-// 1. Types & Interfaces
-// ==========================================
-type ForecastRequest = {
-  aqi_1: number;
-  aqi_6: number;
-  aqi_24: number;
-};
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Card, CardHeader } from '../components/ui/Card';
+import { Badge } from '../components/ui/Badge';
+import { LoadingOverlay } from '../components/ui/Loading';
+import { forecastApi } from '../services/api';
+import { mockForecastResponse } from '../data/mockData';
+import type { ForecastRequest, ForecastResponse } from '../types';
 
-type ForecastResponse = {
-  predicted_aqi: number;
-  confidence: number;
-  trend: 'increasing' | 'decreasing' | 'stable';
-  forecast_24h: Array<{ hour: number; aqi: number }>;
-  sources: Array<{ name: string; percentage: number }>;
-};
-
-// ==========================================
-// 2. Mock Data & API Service
-// ==========================================
-const mockForecastResponse: ForecastResponse = {
-  predicted_aqi: 142,
-  confidence: 0.89,
-  trend: 'decreasing',
-  forecast_24h: [
-    { hour: 0, aqi: 150 },
-    { hour: 4, aqi: 148 },
-    { hour: 8, aqi: 145 },
-    { hour: 12, aqi: 140 },
-    { hour: 16, aqi: 138 },
-    { hour: 20, aqi: 135 },
-    { hour: 24, aqi: 132 }
-  ],
-  sources: [
-    { name: 'Traffic', percentage: 45 },
-    { name: 'Industry', percentage: 30 },
-    { name: 'Construction', percentage: 15 },
-    { name: 'Other', percentage: 10 }
-  ]
-};
-
-const forecastApi = {
-  predict: async (data: ForecastRequest): Promise<ForecastResponse> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Simulate a dynamic response based on inputs
-        const predicted = Math.round((data.aqi_1 * 0.5) + (data.aqi_6 * 0.3) + (data.aqi_24 * 0.2));
-        resolve({
-          ...mockForecastResponse,
-          predicted_aqi: predicted,
-          trend: predicted > data.aqi_1 ? 'increasing' : 'decreasing'
-        });
-      }, 1500);
-    });
-  }
-};
-
-// ==========================================
-// 3. UI Components
-// ==========================================
-const Button = ({ children, loading, className = '', ...props }: any) => (
-  <button 
-    className={`bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center ${className}`} 
-    disabled={loading} 
-    {...props}
-  >
-    {loading ? 'Processing...' : children}
-  </button>
-);
-
-const Input = ({ label, ...props }: any) => (
-  <div className="flex flex-col space-y-1 text-left">
-    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{label}</label>
-    <input 
-      className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" 
-      {...props} 
-    />
-  </div>
-);
-
-const Card = ({ children, className = '' }: any) => (
-  <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 ${className}`}>
-    {children}
-  </div>
-);
-
-const CardHeader = ({ title, subtitle, icon }: any) => (
-  <div className="flex items-center gap-3 mb-5 text-left">
-    {icon && <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">{icon}</div>}
-    <div>
-      <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
-      {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
-    </div>
-  </div>
-);
-
-const Badge = ({ children, variant, className = '' }: any) => {
-  const variants: any = {
-    success: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-    danger: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-  };
-  return (
-    <span className={`px-3 py-1 inline-block rounded-full text-xs font-bold uppercase tracking-wider ${variants[variant]} ${className}`}>
-      {children}
-    </span>
-  );
-};
-
-const LoadingOverlay = ({ text }: { text?: string }) => (
-  <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl">
-    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-    {text && <p className="mt-3 text-sm font-medium text-blue-600 dark:text-blue-400">{text}</p>}
-  </div>
-);
-
-// ==========================================
-// 4. Main Application Component
-// ==========================================
-export default function App() {
+export default function AQIForecast() {
   const [formData, setFormData] = useState<ForecastRequest>({
     aqi_1: 150,
     aqi_6: 145,
@@ -143,16 +33,22 @@ export default function App() {
 
     try {
       const response = await forecastApi.predict(formData);
-      setResult(response);
+      setResult({
+        predicted_aqi: response.predicted_aqi ?? mockForecastResponse.predicted_aqi,
+        confidence: response.confidence ?? mockForecastResponse.confidence,
+        trend: response.trend ?? mockForecastResponse.trend,
+        forecast_24h: response.forecast_24h ?? mockForecastResponse.forecast_24h,
+        sources: response.sources ?? mockForecastResponse.sources,
+      });
     } catch {
-      setError('Failed to get forecast. Using simulated data.');
+      setError('Backend unavailable. Showing demo forecast.');
       setResult(mockForecastResponse);
     } finally {
       setLoading(false);
     }
   };
 
-  const getTrendIcon = (trend: string) => {
+  const getTrendIcon = (trend?: string) => {
     switch (trend) {
       case 'increasing':
         return <TrendingUp className="w-6 h-6 text-red-500" />;
@@ -264,7 +160,7 @@ export default function App() {
                   animate={{ scale: 1, opacity: 1 }}
                   className="text-5xl font-black text-blue-600 dark:text-blue-400"
                 >
-                  {(result.confidence * 100).toFixed(0)}%
+                  {(((result.confidence) ?? 0) * 100).toFixed(0)}%
                 </motion.p>
                 <p className="text-xs text-gray-400 mt-4 font-medium uppercase tracking-widest">Ensemble Accuracy</p>
               </Card>
@@ -279,7 +175,7 @@ export default function App() {
                     animate={{ y: 0, opacity: 1 }}
                     className="text-2xl font-bold capitalize text-gray-900 dark:text-white"
                   >
-                    {result.trend}
+                    {result.trend ?? 'stable'}
                   </motion.p>
                 </div>
                 <p className="text-xs text-gray-400 mt-4 font-medium uppercase tracking-widest">Expected Shift</p>
@@ -295,7 +191,7 @@ export default function App() {
               />
               <div className="h-72 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={result.forecast_24h} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart data={result.forecast_24h || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
@@ -326,7 +222,7 @@ export default function App() {
                         boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
                       }}
                       itemStyle={{ color: '#fff' }}
-                      formatter={(value: number) => [`${value} AQI`, 'Projection']}
+                      formatter={(value: any) => [`${value} AQI`, 'Projection']}
                       labelFormatter={(label) => `Target Hour: +${label}h`}
                     />
                     <Area
@@ -354,7 +250,7 @@ export default function App() {
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPie>
                       <Pie
-                        data={result.sources}
+                        data={result.sources || []}
                         cx="50%"
                         cy="50%"
                         innerRadius={60}
@@ -363,25 +259,25 @@ export default function App() {
                         dataKey="percentage"
                         stroke="none"
                       >
-                        {result.sources.map((_, index) => (
+                        {(result.sources || []).map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip 
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                        formatter={(value: number) => [`${value}%`, 'Contribution']}
+                        formatter={(value: any) => [`${value}%`, 'Contribution']}
                       />
                     </RechartsPie>
                   </ResponsiveContainer>
                 </div>
                 
                 <div className="flex flex-col justify-center gap-4 px-4">
-                  {result.sources.map((source, index) => (
+                  {(result.sources || []).map((source, index) => (
                     <div key={source.name} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div
                           className="w-4 h-4 rounded-full shadow-sm"
-                          style={{ backgroundColor: COLORS[index] }}
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
                         />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {source.name}

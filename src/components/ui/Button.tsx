@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ${variantStyles[variant]} ${sizeStyles[size]} ${className}
         `}
         disabled={disabled || loading}
-        {...props}
+        {...(props as any)}
       >
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin" />

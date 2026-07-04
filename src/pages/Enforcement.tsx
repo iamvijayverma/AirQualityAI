@@ -26,7 +26,14 @@ const Enforcement = () => {
     setError('');
     try {
       const response = await enforcementApi.getEnforcement();
-      setData(response);
+      setData({
+        priority_actions: response.priority_actions ?? mockEnforcement.priority_actions,
+        aqi_reduction: response.aqi_reduction ?? mockEnforcement.aqi_reduction,
+        expected_aqi_reduction: response.expected_aqi_reduction ?? mockEnforcement.expected_aqi_reduction,
+        risk_level: response.risk_level ?? mockEnforcement.risk_level,
+        enforcement_score: response.enforcement_score ?? mockEnforcement.enforcement_score,
+        zones: response.zones ?? mockEnforcement.zones,
+      });
     } catch {
       setError('Failed to fetch data. Using simulated data.');
       setData(mockEnforcement);
@@ -101,12 +108,12 @@ const Enforcement = () => {
             <div>
               <p className="text-sm text-secondary-500 dark:text-secondary-400">Estimated AQI Reduction</p>
               <motion.p
-                key={data.aqi_reduction}
+                key={data.expected_aqi_reduction || data.aqi_reduction}
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="text-4xl font-bold text-accent-500 mt-2"
               >
-                -{data.aqi_reduction}%
+                {data.expected_aqi_reduction || `-${data.aqi_reduction}%`}
               </motion.p>
               <p className="text-xs text-secondary-400 mt-1">with recommended actions</p>
             </div>
@@ -185,8 +192,9 @@ const Enforcement = () => {
             icon={<BarChart2 className="w-5 h-5" />}
           />
           <div className="space-y-3 mt-4">
-            {data.zones.map((zone, index) => {
-              const style = priorityStyles[zone.priority];
+            {(data.zones || []).map((zone, index) => {
+              const priorityKey = (zone.priority || 'low').toLowerCase() as keyof typeof priorityStyles;
+              const style = priorityStyles[priorityKey] || priorityStyles.low;
               return (
                 <motion.div
                   key={zone.name}

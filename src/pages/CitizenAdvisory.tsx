@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Shield, Wind, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Slider } from '../components/ui/Slider';
 import { Card, CardHeader } from '../components/ui/Card';
@@ -53,7 +52,15 @@ const CitizenAdvisory = () => {
 
     try {
       const response = await citizenAdvisoryApi.getAdvisory(formData);
-      setResult(response);
+      setResult({
+        risk_level: response.risk_level ?? mockCitizenAdvisory.risk_level,
+        health_advisory: response.health_advisory ?? mockCitizenAdvisory.health_advisory,
+        primary_advisory: response.primary_advisory ?? mockCitizenAdvisory.primary_advisory,
+        precautions: response.precautions ?? mockCitizenAdvisory.precautions,
+        mask_recommendation: response.mask_recommendation ?? mockCitizenAdvisory.mask_recommendation,
+        mask_recommended: response.mask_recommended ?? mockCitizenAdvisory.mask_recommended,
+        outdoor_activity: response.outdoor_activity ?? mockCitizenAdvisory.outdoor_activity,
+      });
     } catch {
       setError('Failed to get advisory. Using simulated data.');
       setResult(mockCitizenAdvisory);
@@ -62,7 +69,8 @@ const CitizenAdvisory = () => {
     }
   };
 
-  const currentRiskStyle = riskStyles[result.risk_level];
+  const normalizedRiskLevel = (result.risk_level || 'low').toLowerCase().replace(' ', '_');
+  const currentRiskStyle = riskStyles[normalizedRiskLevel as keyof typeof riskStyles] || riskStyles.low;
 
   return (
     <motion.div
@@ -148,25 +156,25 @@ const CitizenAdvisory = () => {
                   <p className="text-sm text-secondary-500 dark:text-secondary-400 mb-1">Risk Level</p>
                   <div className="flex items-center gap-3">
                     <motion.div
-                      key={result.risk_level}
+                      key={normalizedRiskLevel}
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       className={`px-4 py-2 rounded-xl ${currentRiskStyle.bg}`}
                     >
                       <span className={`text-xl font-bold ${currentRiskStyle.text} capitalize`}>
-                        {result.risk_level.replace('_', ' ')}
+                        {normalizedRiskLevel.replace('_', ' ')}
                       </span>
                     </motion.div>
                     <Badge variant={currentRiskStyle.badge}>
-                      {result.risk_level === 'low' ? 'Safe for outdoor activities' :
-                       result.risk_level === 'moderate' ? 'Caution advised' :
-                       result.risk_level === 'high' ? 'Limit outdoor exposure' : 'Stay indoors'}
+                      {normalizedRiskLevel === 'low' ? 'Safe for outdoor activities' :
+                       normalizedRiskLevel === 'moderate' ? 'Caution advised' :
+                       normalizedRiskLevel === 'high' ? 'Limit outdoor exposure' : 'Stay indoors'}
                     </Badge>
                   </div>
                 </div>
                 <AlertTriangle className={`w-12 h-12 ${
-                  result.risk_level === 'low' ? 'text-accent-500' :
-                  result.risk_level === 'moderate' ? 'text-amber-500' :
+                  normalizedRiskLevel === 'low' ? 'text-accent-500' :
+                  normalizedRiskLevel === 'moderate' ? 'text-amber-500' :
                   'text-red-500'
                 }`} />
               </div>
@@ -201,7 +209,7 @@ const CitizenAdvisory = () => {
               icon={<CheckCircle className="w-5 h-5" />}
             />
             <div className="space-y-3 mt-4">
-              {result.precautions.map((precaution, index) => (
+              {(result.precautions || []).map((precaution, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}

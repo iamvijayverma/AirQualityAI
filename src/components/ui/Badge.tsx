@@ -8,6 +8,7 @@ interface BadgeProps {
   size?: BadgeSize;
   children: ReactNode;
   icon?: ReactNode;
+  className?: string;
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
@@ -25,12 +26,12 @@ const sizeStyles: Record<BadgeSize, string> = {
   lg: 'px-3 py-1.5 text-base',
 };
 
-export const Badge = ({ variant = 'default', size = 'md', children, icon }: BadgeProps) => {
+export const Badge = ({ variant = 'default', size = 'md', children, icon, className = '' }: BadgeProps) => {
   return (
     <span
       className={`
         inline-flex items-center gap-1.5 font-medium rounded-lg
-        ${variantStyles[variant]} ${sizeStyles[size]}
+        ${variantStyles[variant]} ${sizeStyles[size]} ${className}
       `}
     >
       {icon}

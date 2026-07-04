@@ -56,7 +56,7 @@ const Dashboard = () => {
 
         {/* Right Column - Forecast & Stations */}
         <div className="space-y-6">
-          <ForecastCard forecast={mockForecastResponse.forecast_24h} />
+          <ForecastCard forecast={mockForecastResponse.forecast_24h || []} />
           <PollutionSourceChart data={mockPollutionSources} />
           <MonitoringStations stations={mockStations} />
         </div>

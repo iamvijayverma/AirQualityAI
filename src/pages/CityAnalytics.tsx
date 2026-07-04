@@ -9,11 +9,6 @@ import { LoadingOverlay } from '../components/ui/Loading';
 import { mockCities } from '../data/mockData';
 import type { CityData } from '../types';
 
-const trendIcons = {
-  improving: TrendingDown,
-  declining: TrendingUp,
-  stable: Minus,
-};
 
 const trendStyles = {
   improving: { icon: TrendingDown, color: 'text-accent-500', badge: 'success' as const },
@@ -30,7 +25,7 @@ const getAQIColor = (aqi: number) => {
 };
 
 const CityAnalytics = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [selectedCities, setSelectedCities] = useState<string[]>(['Jaipur', 'Delhi', 'Mumbai', 'Bengaluru']);
   const [cities] = useState<CityData[]>(mockCities);
   const [sortField, setSortField] = useState<'aqi' | 'pm25' | 'pm10'>('aqi');
@@ -58,13 +53,6 @@ const CityAnalytics = () => {
     }
   };
 
-  const comparisonData = cities.map((city) => ({
-    name: city.name,
-    aqi: city.aqi,
-    pm25: city.pm25,
-    pm10: city.pm10,
-    trend: city.trend,
-  }));
 
   const selectedCityData = cities.filter((c) => selectedCities.includes(c.name));
 

@@ -21,7 +21,7 @@ interface TopNavProps {
 }
 
 export const TopNav = ({ onMenuClick, sidebarCollapsed }: TopNavProps) => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
